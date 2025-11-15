@@ -9,8 +9,6 @@ API REST para validação e cadastro de CNH (Carteira Nacional de Habilitação)
 - [Configuração](#configuração)
 - [Executando o Projeto](#executando-o-projeto)
 - [Documentação da API](#documentação-da-api)
-- [Endpoints Disponíveis](#endpoints-disponíveis)
-- [Testes](#testes)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 
 ## 🔧 Requisitos
@@ -106,4 +104,3 @@ http://localhost:8000/api/documentation
 - **Swagger/OpenAPI** - Documentação da API
 - **L5-Swagger** - Geração de documentação
 - **Composer** - Gerenciador de dependências PHP
-- **NPM** - Gerenciador de dependências Node.js
