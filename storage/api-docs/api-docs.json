@@ -1,0 +1,616 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API SENATRAN - Validação de CNH",
+        "description": "API para validação e cadastro de CNH (Carteira Nacional de Habilitação)",
+        "contact": {
+            "name": "Suporte API",
+            "email": "contato@exemplo.com"
+        },
+        "version": "2.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "Servidor da API"
+        }
+    ],
+    "paths": {
+        "/v2/senatran/salvar-cnh": {
+            "post": {
+                "tags": [
+                    "CNH"
+                ],
+                "summary": "Salvar CNH",
+                "description": "Cadastra uma nova CNH no sistema. Valida se CPF ou registro já existem antes de cadastrar.",
+                "operationId": "salvarCnh",
+                "requestBody": {
+                    "description": "Dados da CNH a ser cadastrada",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "cpf",
+                                    "registro",
+                                    "codigo_seguranca",
+                                    "nome_condutor",
+                                    "nome_mae",
+                                    "categoria",
+                                    "emissao_data",
+                                    "validade_data",
+                                    "espelho",
+                                    "situacao"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "description": "Token de autenticação da API",
+                                        "type": "string",
+                                        "example": "seu_token_aqui"
+                                    },
+                                    "cpf": {
+                                        "description": "CPF do condutor",
+                                        "type": "string",
+                                        "example": "777.888.999-00"
+                                    },
+                                    "registro": {
+                                        "description": "Número de registro da CNH",
+                                        "type": "string",
+                                        "example": "77777777777"
+                                    },
+                                    "codigo_seguranca": {
+                                        "description": "Código de segurança da CNH",
+                                        "type": "string",
+                                        "example": "77788899900"
+                                    },
+                                    "nome_condutor": {
+                                        "description": "Nome completo do condutor",
+                                        "type": "string",
+                                        "example": "Roberto Carlos Santos"
+                                    },
+                                    "nome_mae": {
+                                        "description": "Nome completo da mãe",
+                                        "type": "string",
+                                        "example": "Helena Santos"
+                                    },
+                                    "categoria": {
+                                        "description": "Categoria da CNH (A, B, AB, C, D, E, AC, AD, AE)",
+                                        "type": "string",
+                                        "example": "AB"
+                                    },
+                                    "emissao_data": {
+                                        "description": "Data de emissão da CNH (formato: dd/mm/yyyy)",
+                                        "type": "string",
+                                        "example": "15/03/2020"
+                                    },
+                                    "validade_data": {
+                                        "description": "Data de validade da CNH (formato: dd/mm/yyyy)",
+                                        "type": "string",
+                                        "example": "15/03/2030"
+                                    },
+                                    "espelho": {
+                                        "description": "Número do espelho da CNH",
+                                        "type": "string",
+                                        "example": "4444444444"
+                                    },
+                                    "situacao": {
+                                        "description": "Situação atual da CNH",
+                                        "type": "string",
+                                        "enum": [
+                                            "válida",
+                                            "suspensa",
+                                            "cassada",
+                                            "vencida"
+                                        ],
+                                        "example": "válida"
+                                    },
+                                    "login_cpf": {
+                                        "description": "CPF para login GOV.BR (opcional)",
+                                        "type": "string",
+                                        "example": "777.888.999-00"
+                                    },
+                                    "login_senha": {
+                                        "description": "Senha para login GOV.BR (opcional)",
+                                        "type": "string",
+                                        "example": "senha123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "CNH cadastrada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 201
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "CNH cadastrada com sucesso."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "header": {
+                                            "properties": {
+                                                "api_version": {
+                                                    "type": "string",
+                                                    "example": "v2"
+                                                },
+                                                "service": {
+                                                    "type": "string",
+                                                    "example": "senatran/salvar-cnh"
+                                                },
+                                                "billable": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "price": {
+                                                    "type": "string",
+                                                    "example": "0.00"
+                                                },
+                                                "elapsed_time_in_milliseconds": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "data_count": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 7
+                                                    },
+                                                    "categoria": {
+                                                        "type": "string",
+                                                        "example": "AB"
+                                                    },
+                                                    "cpf": {
+                                                        "type": "string",
+                                                        "example": "777.888.999-00"
+                                                    },
+                                                    "registro": {
+                                                        "type": "string",
+                                                        "example": "77777777777"
+                                                    },
+                                                    "codigo_seguranca": {
+                                                        "type": "string",
+                                                        "example": "77788899900"
+                                                    },
+                                                    "nome": {
+                                                        "type": "string",
+                                                        "example": "Roberto Carlos Santos"
+                                                    },
+                                                    "mae": {
+                                                        "type": "string",
+                                                        "example": "Helena Santos"
+                                                    },
+                                                    "emissao_data": {
+                                                        "type": "string",
+                                                        "example": "15/03/2020"
+                                                    },
+                                                    "validade_data": {
+                                                        "type": "string",
+                                                        "example": "15/03/2030"
+                                                    },
+                                                    "espelho": {
+                                                        "type": "string",
+                                                        "example": "4444444444"
+                                                    },
+                                                    "situacao": {
+                                                        "type": "string",
+                                                        "example": "válida"
+                                                    },
+                                                    "nome_condutor_identico_ao_informado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "nome_mae_identico_ao_informado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "CNH já cadastrada - CPF ou registro duplicado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 409
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "CNH já cadastrada no sistema."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Já existe uma CNH cadastrada com este CPF."
+                                            }
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "cpf": {
+                                                    "type": "string",
+                                                    "example": "777.888.999-00"
+                                                },
+                                                "registro": {
+                                                    "type": "string",
+                                                    "example": "77777777777"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados de entrada inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 422
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "Dados de entrada inválidos."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "The cpf field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/senatran/validar-cnh": {
+            "post": {
+                "tags": [
+                    "CNH"
+                ],
+                "summary": "Validar CNH",
+                "description": "Valida os dados de uma CNH comparando com os registros cadastrados no banco de dados. Verifica CPF, registro, código de segurança, nome do condutor e nome da mãe.",
+                "operationId": "validarCnh",
+                "requestBody": {
+                    "description": "Dados da CNH a ser validada",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "cpf",
+                                    "registro",
+                                    "codigo_seguranca"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "description": "Token de autenticação da API",
+                                        "type": "string",
+                                        "example": "seu_token_aqui"
+                                    },
+                                    "cpf": {
+                                        "description": "CPF do condutor",
+                                        "type": "string",
+                                        "example": "123.456.789-01"
+                                    },
+                                    "registro": {
+                                        "description": "Número de registro da CNH",
+                                        "type": "string",
+                                        "example": "11111111111"
+                                    },
+                                    "codigo_seguranca": {
+                                        "description": "Código de segurança da CNH",
+                                        "type": "string",
+                                        "example": "12345678901"
+                                    },
+                                    "nome_condutor": {
+                                        "description": "Nome completo do condutor (opcional - usado para validação)",
+                                        "type": "string",
+                                        "example": "João da Silva"
+                                    },
+                                    "nome_mae": {
+                                        "description": "Nome completo da mãe (opcional - usado para validação)",
+                                        "type": "string",
+                                        "example": "Maria da Silva"
+                                    },
+                                    "login_cpf": {
+                                        "description": "CPF para login GOV.BR (opcional)",
+                                        "type": "string",
+                                        "example": "123.456.789-01"
+                                    },
+                                    "login_senha": {
+                                        "description": "Senha para login GOV.BR (opcional)",
+                                        "type": "string",
+                                        "example": "senha123"
+                                    },
+                                    "pkcs12_cert": {
+                                        "description": "Certificado digital PKCS12 encriptado (opcional)",
+                                        "type": "string"
+                                    },
+                                    "pkcs12_pass": {
+                                        "description": "Senha do certificado digital (opcional)",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "CNH válida - todos os dados conferem",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "A requisição foi processada com sucesso."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "header": {
+                                            "properties": {
+                                                "api_version": {
+                                                    "type": "string",
+                                                    "example": "v2"
+                                                },
+                                                "service": {
+                                                    "type": "string",
+                                                    "example": "senatran/validar-cnh"
+                                                },
+                                                "billable": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "price": {
+                                                    "type": "string",
+                                                    "example": "0.24"
+                                                },
+                                                "elapsed_time_in_milliseconds": {
+                                                    "type": "integer",
+                                                    "example": 250
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "data_count": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "categoria": {
+                                                        "type": "string",
+                                                        "example": "AB"
+                                                    },
+                                                    "codigo_seguranca": {
+                                                        "type": "string",
+                                                        "example": "12345678901"
+                                                    },
+                                                    "cpf": {
+                                                        "type": "string",
+                                                        "example": "123.456.789-01"
+                                                    },
+                                                    "emissao_data": {
+                                                        "type": "string",
+                                                        "example": "06/02/2018"
+                                                    },
+                                                    "espelho": {
+                                                        "type": "string",
+                                                        "example": "9876543210"
+                                                    },
+                                                    "mae": {
+                                                        "type": "string",
+                                                        "example": "Maria da Silva"
+                                                    },
+                                                    "nome": {
+                                                        "type": "string",
+                                                        "example": "João da Silva"
+                                                    },
+                                                    "nome_condutor_identico_ao_informado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "nome_mae_identico_ao_informado": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "registro": {
+                                                        "type": "string",
+                                                        "example": "11111111111"
+                                                    },
+                                                    "situacao": {
+                                                        "type": "string",
+                                                        "example": "válida"
+                                                    },
+                                                    "validade_data": {
+                                                        "type": "string",
+                                                        "example": "05/02/2028"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Dados não conferem - CNH inválida",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 400
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "Dados informados não conferem com a CNH cadastrada."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Código de segurança não confere"
+                                            }
+                                        },
+                                        "data_count": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "situacao": {
+                                                        "type": "string",
+                                                        "example": "inválida"
+                                                    },
+                                                    "nome_condutor_identico_ao_informado": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
+                                                    "nome_mae_identico_ao_informado": {
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CNH não encontrada no banco de dados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "CNH não encontrada no banco de dados."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "A CNH com os dados informados não foi encontrada."
+                                            }
+                                        },
+                                        "data_count": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados de entrada inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 422
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "Dados de entrada inválidos."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "CNH",
+            "description": "Operações relacionadas a CNH"
+        }
+    ]
+}
