@@ -16,6 +16,219 @@
         }
     ],
     "paths": {
+        "/v2/senatran/buscar-cnh": {
+            "get": {
+                "tags": [
+                    "CNH"
+                ],
+                "summary": "Buscar CNH",
+                "description": "Lista todas as CNHs cadastradas no sistema ou busca por CPF/registro específico.",
+                "operationId": "buscarCnh",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "Token de autenticação da API",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "seu_token_aqui"
+                        }
+                    },
+                    {
+                        "name": "cpf",
+                        "in": "query",
+                        "description": "CPF do condutor (opcional - para busca específica)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "123.456.789-01"
+                        }
+                    },
+                    {
+                        "name": "registro",
+                        "in": "query",
+                        "description": "Número de registro da CNH (opcional - para busca específica)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "11111111111"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "CNHs encontradas com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "CNHs encontradas com sucesso."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "header": {
+                                            "properties": {
+                                                "api_version": {
+                                                    "type": "string",
+                                                    "example": "v2"
+                                                },
+                                                "service": {
+                                                    "type": "string",
+                                                    "example": "senatran/buscar-cnh"
+                                                },
+                                                "billable": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "price": {
+                                                    "type": "string",
+                                                    "example": "0.00"
+                                                },
+                                                "elapsed_time_in_milliseconds": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "data_count": {
+                                            "type": "integer",
+                                            "example": 6
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "categoria": {
+                                                        "type": "string",
+                                                        "example": "AB"
+                                                    },
+                                                    "codigo_seguranca": {
+                                                        "type": "string",
+                                                        "example": "12345678901"
+                                                    },
+                                                    "cpf": {
+                                                        "type": "string",
+                                                        "example": "123.456.789-01"
+                                                    },
+                                                    "emissao_data": {
+                                                        "type": "string",
+                                                        "example": "06/02/2018"
+                                                    },
+                                                    "espelho": {
+                                                        "type": "string",
+                                                        "example": "9876543210"
+                                                    },
+                                                    "mae": {
+                                                        "type": "string",
+                                                        "example": "Maria da Silva"
+                                                    },
+                                                    "nome": {
+                                                        "type": "string",
+                                                        "example": "João da Silva"
+                                                    },
+                                                    "registro": {
+                                                        "type": "string",
+                                                        "example": "11111111111"
+                                                    },
+                                                    "situacao": {
+                                                        "type": "string",
+                                                        "example": "válida"
+                                                    },
+                                                    "validade_data": {
+                                                        "type": "string",
+                                                        "example": "05/02/2028"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nenhuma CNH encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 404
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "Nenhuma CNH encontrada."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Nenhuma CNH foi encontrada no sistema."
+                                            }
+                                        },
+                                        "data_count": {
+                                            "type": "integer",
+                                            "example": 0
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Dados de entrada inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 422
+                                        },
+                                        "code_message": {
+                                            "type": "string",
+                                            "example": "Dados de entrada inválidos."
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Token é obrigatório."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v2/senatran/salvar-cnh": {
             "post": {
                 "tags": [
