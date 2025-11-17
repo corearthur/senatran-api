@@ -13,6 +13,207 @@ use Carbon\Carbon;
 class CnhController extends Controller
 {
     /**
+     * @OA\Get(
+     *     path="/v2/senatran/buscar-cnh",
+     *     summary="Buscar CNH",
+     *     description="Lista todas as CNHs cadastradas no sistema ou busca por CPF/registro específico.",
+     *     operationId="buscarCnh",
+     *     tags={"CNH"},
+     *     @OA\Parameter(
+     *         name="token",
+     *         in="query",
+     *         required=true,
+     *         description="Token de autenticação da API",
+     *         @OA\Schema(type="string", example="seu_token_aqui")
+     *     ),
+     *     @OA\Parameter(
+     *         name="cpf",
+     *         in="query",
+     *         required=false,
+     *         description="CPF do condutor (opcional - para busca específica)",
+     *         @OA\Schema(type="string", example="123.456.789-01")
+     *     ),
+     *     @OA\Parameter(
+     *         name="registro",
+     *         in="query",
+     *         required=false,
+     *         description="Número de registro da CNH (opcional - para busca específica)",
+     *         @OA\Schema(type="string", example="11111111111")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="CNHs encontradas com sucesso",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="integer", example=200),
+     *             @OA\Property(property="code_message", type="string", example="CNHs encontradas com sucesso."),
+     *             @OA\Property(property="errors", type="array", @OA\Items(type="string")),
+     *             @OA\Property(
+     *                 property="header",
+     *                 type="object",
+     *                 @OA\Property(property="api_version", type="string", example="v2"),
+     *                 @OA\Property(property="service", type="string", example="senatran/buscar-cnh"),
+     *                 @OA\Property(property="billable", type="boolean", example=false),
+     *                 @OA\Property(property="price", type="string", example="0.00"),
+     *                 @OA\Property(property="elapsed_time_in_milliseconds", type="integer", example=50)
+     *             ),
+     *             @OA\Property(property="data_count", type="integer", example=6),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="categoria", type="string", example="AB"),
+     *                     @OA\Property(property="codigo_seguranca", type="string", example="12345678901"),
+     *                     @OA\Property(property="cpf", type="string", example="123.456.789-01"),
+     *                     @OA\Property(property="emissao_data", type="string", example="06/02/2018"),
+     *                     @OA\Property(property="espelho", type="string", example="9876543210"),
+     *                     @OA\Property(property="mae", type="string", example="Maria da Silva"),
+     *                     @OA\Property(property="nome", type="string", example="João da Silva"),
+     *                     @OA\Property(property="registro", type="string", example="11111111111"),
+     *                     @OA\Property(property="situacao", type="string", example="válida"),
+     *                     @OA\Property(property="validade_data", type="string", example="05/02/2028")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Nenhuma CNH encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="integer", example=404),
+     *             @OA\Property(property="code_message", type="string", example="Nenhuma CNH encontrada."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="array",
+     *                 @OA\Items(type="string", example="Nenhuma CNH foi encontrada no sistema.")
+     *             ),
+     *             @OA\Property(property="data_count", type="integer", example=0),
+     *             @OA\Property(property="data", type="array", @OA\Items())
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Dados de entrada inválidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="code", type="integer", example=422),
+     *             @OA\Property(property="code_message", type="string", example="Dados de entrada inválidos."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="array",
+     *                 @OA\Items(type="string", example="Token é obrigatório.")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function buscarCnh(Request $request): JsonResponse
+    {
+        $startTime = microtime(true);
+        
+        // Validação dos dados de entrada
+        $validator = Validator::make($request->all(), [
+            'token' => 'nullable|string',
+            'cpf' => 'nullable|string',
+            'registro' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code' => 422,
+                'code_message' => 'Dados de entrada inválidos.',
+                'errors' => $validator->errors()->all(),
+            ], 422);
+        }
+
+        // Buscar CNH no banco de dados
+        $query = CnhResponse::with('request');
+        
+        // Se informou CPF ou registro, busca específica
+        if ($request->filled('cpf')) {
+            $query->whereHas('request', function($q) use ($request) {
+                $q->where('cpf', $request->cpf);
+            });
+        }
+        
+        if ($request->filled('registro')) {
+            $query->whereHas('request', function($q) use ($request) {
+                $q->where('registro', $request->registro);
+            });
+        }
+
+        $cnhs = $query->get();
+
+        // Se não encontrou nenhuma CNH
+        if ($cnhs->isEmpty()) {
+            $mensagem = ($request->filled('cpf') || $request->filled('registro')) 
+                ? 'Nenhuma CNH foi encontrada com os dados informados.'
+                : 'Nenhuma CNH foi encontrada no sistema.';
+            
+            return response()->json([
+                'code' => 404,
+                'code_message' => 'Nenhuma CNH encontrada.',
+                'errors' => [$mensagem],
+                'header' => [
+                    'api_version' => 'v2',
+                    'service' => 'senatran/buscar-cnh',
+                    'parameters' => [
+                        'cpf' => $request->cpf,
+                        'registro' => $request->registro,
+                    ],
+                    'requested_at' => now()->format('Y-m-d\TH:i:s.vP'),
+                    'remote_ip' => $request->ip(),
+                ],
+                'data_count' => 0,
+                'data' => [],
+                'site_receipts' => []
+            ], 404);
+        }
+
+        // Calcular tempo de execução
+        $elapsedTime = (int)((microtime(true) - $startTime) * 1000);
+
+        // Mapear dados das CNHs
+        $data = $cnhs->map(function($cnh) {
+            return [
+                'id' => $cnh->id,
+                'categoria' => $cnh->categoria,
+                'codigo_seguranca' => $cnh->codigo_seguranca,
+                'cpf' => $cnh->cpf,
+                'emissao_data' => $cnh->emissao_data->format('d/m/Y'),
+                'espelho' => $cnh->espelho,
+                'mae' => $cnh->mae,
+                'nome' => $cnh->nome,
+                'registro' => $cnh->registro,
+                'situacao' => $cnh->situacao,
+                'validade_data' => $cnh->validade_data->format('d/m/Y'),
+            ];
+        });
+
+        return response()->json([
+            'code' => 200,
+            'code_message' => 'CNHs encontradas com sucesso.',
+            'errors' => [],
+            'header' => [
+                'api_version' => 'v2',
+                'service' => 'senatran/buscar-cnh',
+                'parameters' => [
+                    'cpf' => $request->cpf,
+                    'registro' => $request->registro,
+                ],
+                'billable' => false,
+                'price' => '0.00',
+                'requested_at' => now()->format('Y-m-d\TH:i:s.vP'),
+                'elapsed_time_in_milliseconds' => $elapsedTime,
+                'remote_ip' => $request->ip(),
+                'token_name' => $request->token,
+            ],
+            'data_count' => $cnhs->count(),
+            'data' => $data,
+            'site_receipts' => []
+        ], 200);
+    }
+
+    /**
      * @OA\Post(
      *     path="/v2/senatran/salvar-cnh",
      *     summary="Salvar CNH",

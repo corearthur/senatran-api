@@ -19,7 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('v2')->group(function () {
-    Route::post('/senatran/salvar-cnh', [CnhController::class, 'salvarCnh']);
-    Route::post('/senatran/validar-cnh', [CnhController::class, 'validarCnh']);
+Route::prefix('v2/senatran')->group(function () {
+    Route::get('/buscar-cnh', [CnhController::class, 'buscarCnh']);
+    Route::post('/salvar-cnh', [CnhController::class, 'salvarCnh']);
+    Route::post('/validar-cnh', [CnhController::class, 'validarCnh']);
 });
